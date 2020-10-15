@@ -1058,12 +1058,12 @@ function wc_setcookie( $name, $value, $expire = 0, $secure = false, $httponly = 
 				'path'     => COOKIEPATH ? COOKIEPATH : '/',
 				'domain'   => COOKIE_DOMAIN,
 				'secure'   => $secure,
-				'httponly' => apply_filters( 'woocommerce_cookie_httponly', $httponly, $name, $value, $expire, $secure ),
+				'httponly' => apply_filters( 'woocommerce_cookie_httponly', $httponly, $name, $value, $expire, $secure, $samesite ),
 				'samesite' => $samesite,
 			);
 			setcookie( $name, $value, $options );
 		} else {
-			setcookie( $name, $value, $expire, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, $secure, apply_filters( 'woocommerce_cookie_httponly', $httponly, $name, $value, $expire, $secure ) );
+			setcookie( $name, $value, $expire, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, $secure, apply_filters( 'woocommerce_cookie_httponly', $httponly, $name, $value, $expire, $secure, $samesite ) );
 		}
 	} elseif ( Constants::is_true( 'WP_DEBUG' ) ) {
 		headers_sent( $file, $line );
