@@ -281,7 +281,7 @@ final class WC_Cart_Session {
 			);
 			foreach ( $setcookies as $name => $value ) {
 				if ( ! isset( $_COOKIE[ $name ] ) || $_COOKIE[ $name ] !== $value ) {
-					wc_setcookie( $name, $value );
+					wc_setcookie( $name, $value, 0, false, false, 'Lax' );
 				}
 			}
 		} else {
