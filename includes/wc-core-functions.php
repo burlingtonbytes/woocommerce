@@ -1046,10 +1046,25 @@ function wc_print_js() {
  * @param  integer $expire Expiry of the cookie.
  * @param  bool    $secure Whether the cookie should be served only over https.
  * @param  bool    $httponly Whether the cookie is only accessible over HTTP, not scripting languages like JavaScript. @since 3.6.0.
+ * @param  string  $samesite Whether the cookie should be sent only in first-party, or third-party contexts. Expects "None", "Lax", or "Strict". @since 4.6.1
  */
-function wc_setcookie( $name, $value, $expire = 0, $secure = false, $httponly = false ) {
+function wc_setcookie( $name, $value, $expire = 0, $secure = false, $httponly = false, $samesite = null ) {
 	if ( ! headers_sent() ) {
-		setcookie( $name, $value, $expire, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, $secure, apply_filters( 'woocommerce_cookie_httponly', $httponly, $name, $value, $expire, $secure ) );
+		// Only PHP >= 7.3.0 supports SameSite and specifying cookie parameters in an array.
+		// Check PHP version and fall back to legacy syntax (without SameSite) if PHP is too old.
+		if ( PHP_VERSION_ID >= 70300 ) {
+			$options = array(
+				'expire'   => $expire,
+				'path'     => COOKIEPATH ? COOKIEPATH : '/',
+				'domain'   => COOKIE_DOMAIN,
+				'secure'   => $secure,
+				'httponly' => apply_filters( 'woocommerce_cookie_httponly', $httponly, $name, $value, $expire, $secure ),
+				'samesite' => $samesite,
+			);
+			setcookie( $name, $value, $options );
+		} else {
+			setcookie( $name, $value, $expire, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, $secure, apply_filters( 'woocommerce_cookie_httponly', $httponly, $name, $value, $expire, $secure ) );
+		}
 	} elseif ( Constants::is_true( 'WP_DEBUG' ) ) {
 		headers_sent( $file, $line );
 		trigger_error( "{$name} cookie cannot be set - headers already sent by {$file} on line {$line}", E_USER_NOTICE ); // @codingStandardsIgnoreLine
