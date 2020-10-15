@@ -1042,7 +1042,7 @@ function wc_setcookie( $name, $value, $expire = 0, $secure = false, $httponly = 
 				'domain'   => COOKIE_DOMAIN,
 				'secure'   => apply_filters( 'woocommerce_cookie_secure', $secure, $name, $value, $expire, $samesite ),
 				'httponly' => apply_filters( 'woocommerce_cookie_httponly', $httponly, $name, $value, $expire, $secure, $samesite ),
-				'samesite' => $samesite,
+				'samesite' => apply_filters( 'woocommerce_cookie_samesite', $samesite, $name, $value, $expire, $secure ),
 			);
 			setcookie( $name, $value, $options );
 		} else {
