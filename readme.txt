@@ -1,10 +1,10 @@
 === WooCommerce ===
-Contributors: automattic, mikejolley, jameskoster, claudiosanches, kloon, rodrigosprimo, peterfabian1000, vedjain, jamosova, obliviousharmony, konamiman, sadowski
+Contributors: automattic, mikejolley, jameskoster, claudiosanches, rodrigosprimo, peterfabian1000, vedjain, jamosova, obliviousharmony, konamiman, sadowski, wpmuguru, royho
 Tags: e-commerce, store, sales, sell, woo, shop, cart, checkout, downloadable, downloads, payments, paypal, storefront, stripe, woo commerce
-Requires at least: 5.3
-Tested up to: 5.5
+Requires at least: 5.4
+Tested up to: 5.6
 Requires PHP: 7.0
-Stable tag: 4.6.2
+Stable tag: 5.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,7 +12,7 @@ WooCommerce is the world’s most popular open-source eCommerce solution.
 
 == Description ==
 
-WooCommerce is [the world’s most popular](https://trends.builtwith.com/shop) open-source eCommerce solution. 
+WooCommerce is [the world’s most popular](https://trends.builtwith.com/shop) open-source eCommerce solution.
 
 Our core platform is free, flexible, and amplified by a global community. The freedom of open-source means you retain full ownership of your store’s content and data forever.
 
@@ -43,13 +43,13 @@ Manage your store from anywhere with the free WooCommerce [mobile app](https://w
 
 With WooCommerce, your data belongs to you. Always.
 
-If you opt to share [usage data](https://woocommerce.com/usage-tracking/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) with us, you can feel confident knowing that it’s anonymized and kept secure. Choose to opt-out at any time without impacting your store. 
+If you opt to share [usage data](https://woocommerce.com/usage-tracking/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) with us, you can feel confident knowing that it’s anonymized and kept secure. Choose to opt-out at any time without impacting your store.
 
 Unlike hosted eCommerce solutions, WooCommerce store data is future-proof; should you wish to migrate to a different platform, you’re free to export all your content and take your site wherever you choose. No restrictions.
 
 = Why developers choose (and love) WooCommerce =
 
-Developers can use WooCommerce to create, customize, and scale a store to meet a client’s exact specifications, making enhancements through extensions or custom solutions. 
+Developers can use WooCommerce to create, customize, and scale a store to meet a client’s exact specifications, making enhancements through extensions or custom solutions.
 
 - Leverage [hooks and filters](https://docs.woocommerce.com/document/introduction-to-hooks-actions-and-filters/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) to modify or create functionality.
 - Integrate virtually any service using a robust [REST API](https://docs.woocommerce.com/document/woocommerce-rest-api/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) and webhooks.
@@ -103,7 +103,7 @@ We have a detailed guide on [How To Update WooCommerce](https://docs.woocommerce
 
 = My site broke – what do I do? =
 
-Start by diagnosing the issue using our helpful [troubleshooting guide](https://docs.woocommerce.com/documentation/get-help/troubleshooting-get-help/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). 
+Start by diagnosing the issue using our helpful [troubleshooting guide](https://docs.woocommerce.com/documentation/get-help/troubleshooting-get-help/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
 
 If you noticed the error after updating a theme or plugin, there might be compatibility issues between it and WooCommerce. If the issue appeared after updating WooCommerce, there could be a conflict between WooCommerce and an outdated theme or plugin.
 
@@ -141,7 +141,7 @@ Visit the [WooCommerce server requirements documentation](https://docs.woocommer
 = Automatic installation =
 
 Automatic installation is the easiest option -- WordPress will handles the file transfer, and you won’t need to leave your web browser. To do an automatic install of WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu, and click “Add New.”
- 
+
 In the search field type “WooCommerce,” then click “Search Plugins.” Once you’ve found us,  you can view details about it such as the point release, rating, and description. Most importantly of course, you can install it by! Click “Install Now,” and WordPress will take it from there.
 
 = Manual installation =
@@ -160,131 +160,71 @@ WooCommerce comes with some sample data you can use to see how products look; im
 
 == Changelog ==
 
-= 4.6.2 - 2020-11-05 =
+= 5.0.0 - 2021-02-09 =
 
 **WooCommerce**
 
-* Prevent checkout from creating accounts when related setting is disabled.
+* Enhancement - Create additional download permissions for simple downloadable products that are converted to variable products provided that there are variations offering the same files. #28521
+* Enhancement - Export SASS variables as CSS variables. #28709
+* Tweak - Added "Store management insights" option. #28712
+* Tweak - Styling for dismiss link of the store notice for Twenty Twenty and Twenty Twenty One themes. #28790
+* Tweak - Notice to deprecate legacy reports in favor of the newer analytics page. #28799
+* Tweak - Ability to create new tags for products when creating a product via the REST API. #28723
+* Tweak - Disable untested plugin's notice from System Status and Plugin's page. #28840
+* Tweak - Use `wp_robots_no_robots()` when available to support WP 5.7. #28993
+* Fix - Improves the logic for deleting variations when a product type is changed. #27137
+* Fix - Use 'setlocale' in 'wc_ascii_uasort_comparison' for compatibility with PHP 8. #27844
+* Fix - Normalize end of lines in log-handler-email tests for compatibility with PHP 8. #27844
+* Fix - Invert `if` statement to reduce nesting level in `\WC_Shipping::calculate_shipping_for_package`. #28558
+* Fix - Changed value for speak to fix css3 validation issue. #28607
+* Fix - Check if Cart and Checkout pages are using block instead of shortcode for the Status check. #28679
+* Fix - Attributes on Edit Product page - "Select all" not working after "Select none" used. #28681
+* Fix - Ensure the orders and products statuses are reverted correctly when restoring them. #28690
+* Fix - Add checks to make sure session is initialised before loading the data store. #28692
+* Fix - Update featured extensions API endpoint on WooCommerce/Extensions page. #28719
+* Fix - Add Authorization header to the features extensions and search requests made to the marketplace. #28719
+* Fix - Duplicate New Order emails being sent when changing order status. #28809
+* Fix - Add migration to fix existing product review count. #28814
+* Fix - Fixed issues with empty prices in PHP 8. #28900
+* Dev - Increased WordPress minimum version to 5.4 according to WooCommerce's L-2 support policy. #28977
+* Dev - Use a custom fork of PHPUnit 7 in PHP 8 to workaround compatibility issues. #27844
+* Dev - Introduced `woocommerce_activated_plugin` hook. #28698
+* Dev - Clean up the `WC_Shipping_Zone_Data_Store::read()` method, documenting the `woocommerce_shipping_zone_loaded` hook. #28801
+* Dev - Updated the Jetpack Autoloader to 2.9.1. #29057
+* Localization - Adding states for Dominican Republic. #28713
+* Localization - Restored list of Serbia districts #28778
+* Localization - Update Indian state name from `Orissa` to `Odisha`. #28740
+* Localization - Remove post code requirement for Guatemala. #28706
+* Localization - Fixed name for state in Guatemala. #28706
 
-= 4.6.1 - 2020-10-21 =
+**WooCommerce Admin - 1.9.0**
 
-**WooCommerce**
-
-* Update woocommerce-admin to 1.6.2. #28006
-
-**WooCommerce Admin - 1.6.2**
-
-* Fix for missing activity panels. #5400
-* Adds array casting on onboarding profile option. #5415
-* Gutenberg compatibility fix for home screen inbox. #5416
-* Gutenberg compat fix for empty reports (leaderboard, customers report). #5409
-* i18n fix for Performance Indicators labels Home Screen. #5405
-
-= 4.6.0 - 2020-10-14 =
-
-**WooCommerce**
-
-* Tweak - Removed the "Features" settings page now that the WooCommerce Admin dashboard is enabled by default. #27047
-* Tweak - Deprecate old setup wizard. #26853
-* Tweak - Add WC pages when the plugin is activated now that the old setup wizard was deprecated. #26853
-* Fix - When adding a grouped product to the cart, quantity is passed through the `woocommerce_stock_amount` filter like it's done for simple and variable products. #27219
-* Fix - Several style improvements to notices in theme Twenty Twenty. #27387
-* Fix - Fixed countries list sorting and added support to PHP internationalization functions. #27416
-* Fix - Remove "There are no notes yet" after adding the first one by AJAX. #27449
-* Fix - Fix PHP docblock summary to properly reflect the role of `wc_get_coupon_id_by_code` function. #27453
-* Fix - Fix white space character in add-to-cart script. #27459
-* Fix - Adding missing css property to email templates to ensure header background color is less likely to be overridden by email client. #27525
-* Fix - Encapsulate scope of `c` variable to avoid polluting the global scope and potentially causing problems if other plugins use the same variable name. #27610
-* Fix - Fix bug when using tax classes with some non-ASCII characters. #27615
-* Fix - Paypal gateway: protect code against a fatal error if WooCommerce is unable to communicate with PayPal. #27616
-* Fix - Added WP environment type to tracker. #27685
-* Fix - Prevent fatal errors when trying to determine what is the product type taxonomy term. #27441
-* Fix - Typo in the error message shown in the customizer. #27008
-* Dev - Introduced `woocommerce_return_to_shop_text` filter. #25419
-* Dev - Introduced `woocommerce_cart_item_required_stock_is_not_enough` filter. #26196
-* Dev - Changed relative `include` paths to absolute `include` paths using `__DIR__`. #27433
-* Dev - Fixed duplicated use of `woocommerce_add_$notice_type`. #27437
-* Dev - Allow public access to core capabilities for other plugins. #26976
-* Dev - Add `woocommerce_should_send_no_stock_notification` filter. #27634
-* Dev - New action 'woocommerce_after_order_details' added in a order-details.php template. #26327
-* Dev - Fix and improve documentation of wc_string_to_bool and wc_bool_to_string. #27662
-* Localization - Remove duplicated entry for Cyprus when listing countries by continent. #27636
-* Localization - Add Egypt regions. #27495
-* Localization - Updated name for the Hungarian county called Csongrád-Csanád. #27075
-* Localization - Adding states for Benin country. #27217
-* Localization - Add KR locale info. #27496
-* Localization - Fixed the name of the Spain state of `Biscay`. #27548
-
-**WooCommerce Admin - 1.6.1**
-
-- Dev: Reviews wp.data store #4941
-- Dev: Notes wp.data store #4943
-- Dev: Add woocommerce_analytics_update_order_stats_data filter #4934
-- Dev: Remove unused lib/date #4987
-- Dev: Exports wp.data store #4958
-- Dev: Remove _experimentalResolveSelect usage #4949
-- Dev: Items wp.data store #5009
-- Dev: Import wp.data store #4982
-- Dev: Remove `fresh-data` wc-api dependency #5075
-- Dev: Add initial e2e test suite #5028
-- Dev: Combine translation chunks when languages updated #5094
-- Dev: Add filters for columns in reports #5134
-- Dev: Don't include "min" suffix in build JS files for core build #5130
-- Dev: Store Profiler - Industry step: reduced padding and removed industry #5157
-- Dev: Remove product settings video note #5213
-- Enhancement: Add free local shipping zone on profile complete #4857
-- Enhancement: Add woocommerce/tracks pacakage #5107
-- Enhancement: Add filter to allow modification of report columns #4984
-- Enhancement: Add WooCommerce Mobile Banner #5037
-- Enhancement: Add Product Attribute advanced filter #5038
-- Enhancement: Add support for advanced filters with multiple instances #5050
-- Enhancement: Automated taxes smart default #5076
-- Enhancement: Add product attribute filter to Orders report #5068
-- Tweak: Remove payment task actions #4917
-- Tweak: Don't import from React, use @wordpress/element #4978
-- Tweak: Use filtered headers array in onColumnsChange callback #4964
-- Tweak: Orders panel get selectors form wc-api #4997
-- Tweak: Group tasks by completion in setup checklist #5001
-- Tweak: Replace useFilters with WP withFilters #4962
-- Tweak: Refactor header component to function #5023
-- Tweak: Refactor task list status to onboarding data store #4998
-- Tweak: Add monthly pricing toggle in OBW #5015
-- Tweak: OBW style updates #5059
-- Tweak: Remove chevron icons from Fish Setup task list #5114
-- Tweak: Add option to not charge sales tax in setup checklist #5111
-- Tweak: Enable homescreen for all sites #5108
-- Tweak: Enable remote inbox in all envs #5160
-- Tweak: Add opt-out for remote inbox #5162
-- Fix: Table componenbt onQueryChange default prop #4959
-- Fix: Dependency declarations in woocommerce/components #4972
-- Fix: Text domains in stock report #4980
-- Fix: Typo in reports store action creators #4992
-- Fix: Note data actions and consolidate query constants #4990
-- Fix: Advanced filters screen reader text #5032
-- Fix: Show full variation name in products report #5056
-- Fix: Card to connect to woocommerce.com #5129
-- Fix: Search all variation attribute values #5141
-- Fix: Force float before addition in taxes #5149
-- Fix: Enlarged store profiler text in two steps #5194
-- Fix: Bug where sometimes the task list would not vanish after being completed #5205
-
-**WooCommerce Blocks - 3.2.0, 3.3.0 and 3.4.0**
-
-- Fix an undefined variable PHP notice related to Product REST API. [#2962](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/2962)
-- Fixed an issue that was making some blocks not to render correctly in the Empty cart template. [#2904](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/2904)
-- Fixes a styling issue in the Product Search block in the editor. [#3014](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3014)
-- Improved focus styles of error states on form elements. [#2974](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/2974)
-- Deprecate wc.wcSettings.setSetting function. [#3010](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3010)
-- Improve behaviour of draft order cleanup to account for clobbered custom shop order status. [#2912](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/2912)
-- Fixed styling options of the Product Title block (in All Products). [3095](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3095)
-- Fix product reviews schema date fields to use new (WP 5.5) `date-time` format. ([3109](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3109))
-- Use wp_login_url instead of hardcoding login path. ([3090](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3090))
-- Create DebouncedValidatedTextInput component. ([3108](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3108))
-- Merge ProductPrice atomic block and component. ([3065](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3065))
+* Fix - Add Customer Type column to the Orders report table. #5820
+* Fix - Product exclusion filter on Orders Report.
+* Fix - Typo in Variation Stats DataStore context filter value.
+* Fix - support custom attributes in Attribute advanced report filter.
+* Fix - Don't show Stock and Reviews Homescreen panels too early.
+* Tweak - Remove deprecated use of Jetpack in shipping label banner. #5929
+* Fix - Undefined `$collate` variable when database does not have collation capability. #5992
+* Tweak - Remove `visit_count` from track, and update task count logic. #5996
+* Fix - Moved certified owner label for review to title. ##5877
+* Fix - Move collapsible config to panels object, to allow for more control. #5855
+* Enhancement - Show Help panel tooltip when user visits unfinished task more then once. #5826
+* Tweak - Fix inconsistent REST API paramater name for customer type filtering.
+* Enhancement - Tasks extensibility in Home Screen. #5794
+* Enhancement - Add page parameter to override default wc-admin page in Navigation API. #5821
+* Fix - Invalidate product count if the last product was updated in the list. #5790
+* Fix - Updating (non wordpress user) customer with order data
+* Dev - Add documentation for filter `woocommerce_admin_pages_list` and `wc_admin_register_page` #5844
+* Dev - Revert work done in #4857 for automated shipping after OBW is completed #5971
+* Add - Welcome modal when coming from Calypso #6004
+* Enhancement - Add an a/b experiment for installing free business features #5786
+* Dev - Add `onChangeCallback` feature to the wc-admin `<Form>` component #5786
+* Fix - Generate JSON translation chunks on plugin activation #6028
+* Dev - Add merchant email notifications #5922
+* Add - Email note to add first product. #6024
+* Add - Note for users coming from Calypso. #6030
+* Enhancement - Add an "unread" indicator to inbox messages. #6047
+* Add - Manage activity from home screen inbox message. #6072
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/master/changelog.txt).
-
-== Upgrade Notice ==
-
-= 4.0 =
-4.0 is a major update. Make a full site backup, update your theme and extensions, and [review update best practices](https://docs.woocommerce.com/document/how-to-update-your-site) before upgrading.
