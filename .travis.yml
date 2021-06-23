@@ -1,9 +1,9 @@
 version: ~> 1.0
 
-# Specifies that Travis should create builds for master and release branches and also tags.
+# Specifies that Travis should create builds for trunk and release branches and also tags.
 branches:
   only:
-    - master
+    - trunk
     - /^\d+\.\d+(\.\d+)?(-\S*)?$/
     - /^release\//
 
@@ -36,9 +36,9 @@ jobs:
      - npm install
      - composer install --no-dev
     script:
-      - travis_retry npm run build:assets
-      - travis_retry npm run docker:up
-      - travis_retry npm run test:e2e
+      - npm run build:assets
+      - npm run docker:up
+      - npm run test:e2e
     after_script:
       - npm run docker:down
   - name: "WP Nightly"

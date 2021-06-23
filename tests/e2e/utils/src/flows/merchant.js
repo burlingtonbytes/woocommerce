@@ -9,6 +9,7 @@ const config = require( 'config' );
 const { clearAndFillInput } = require( '../page-utils' );
 const {
 	WP_ADMIN_ALL_ORDERS_VIEW,
+	WP_ADMIN_ALL_PRODUCTS_VIEW,
 	WP_ADMIN_DASHBOARD,
 	WP_ADMIN_LOGIN,
 	WP_ADMIN_NEW_COUPON,
@@ -17,7 +18,8 @@ const {
 	WP_ADMIN_PERMALINK_SETTINGS,
 	WP_ADMIN_PLUGINS,
 	WP_ADMIN_SETUP_WIZARD,
-	WP_ADMIN_WC_SETTINGS
+	WP_ADMIN_WC_SETTINGS,
+	WP_ADMIN_NEW_SHIPPING_ZONE
 } = require( './constants' );
 
 const baseUrl = config.get( 'url' );
@@ -56,6 +58,12 @@ const merchant = {
 
 	openAllOrdersView: async () => {
 		await page.goto( WP_ADMIN_ALL_ORDERS_VIEW, {
+			waitUntil: 'networkidle0',
+		} );
+	},
+
+	openAllProductsView: async () => {
+		await page.goto( WP_ADMIN_ALL_PRODUCTS_VIEW, {
 			waitUntil: 'networkidle0',
 		} );
 	},
@@ -121,6 +129,12 @@ const merchant = {
 		} );
 	},
 
+	goToProduct: async ( productId ) => {
+		await page.goto( WP_ADMIN_SINGLE_CPT_VIEW( productId ), {
+			waitUntil: 'networkidle0',
+		} );
+	},
+
 	updateOrderStatus: async ( orderId, status ) => {
 		await page.goto( WP_ADMIN_SINGLE_CPT_VIEW( orderId ), {
 			waitUntil: 'networkidle0',
@@ -130,6 +144,43 @@ const merchant = {
 		await expect( page ).toClick( 'button.save_order' );
 		await page.waitForSelector( '#message' );
 		await expect( page ).toMatchElement( '#message', { text: 'Order updated.' } );
+	},
+
+	verifyOrder: async (orderId, productName, productPrice, quantity, orderTotal, ensureCustomerRegistered = false) => {
+		await merchant.goToOrder(orderId);
+
+		// Verify that the order page is indeed of the order that was placed
+		// Verify order number
+		await expect(page).toMatchElement('.woocommerce-order-data__heading', {text: 'Order #' + orderId + ' details'});
+
+		// Verify product name
+		await expect(page).toMatchElement('.wc-order-item-name', {text: productName});
+
+		// Verify product cost
+		await expect(page).toMatchElement('.woocommerce-Price-amount.amount', {text: productPrice});
+
+		// Verify product quantity
+		await expect(page).toMatchElement('.quantity', {text: quantity.toString()});
+
+		// Verify total order amount without shipping
+		await expect(page).toMatchElement('.line_cost', {text: orderTotal});
+
+		if ( ensureCustomerRegistered ) {
+			// Verify customer profile link is present to verify order was placed by a registered customer, not a guest
+			await expect( page ).toMatchElement( 'label[for="customer_user"] a[href*=user-edit]', { text: 'Profile' } );
+		}
+	},
+
+	openNewShipping: async () => {
+		await page.goto( WP_ADMIN_NEW_SHIPPING_ZONE, {
+			waitUntil: 'networkidle0',
+		} );
+	},
+
+	openEmailLog: async () => {
+		await page.goto( `${baseUrl}wp-admin/tools.php?page=wpml_plugin_log`, {
+			waitUntil: 'networkidle0',
+		} );
 	},
 };
 

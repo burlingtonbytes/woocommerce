@@ -6,14 +6,19 @@
  * Internal dependencies
  */
 import { merchant } from './flows';
-import { clickTab, uiUnblocked, verifyCheckboxIsUnset } from './page-utils';
+import { clickTab, uiUnblocked, verifyCheckboxIsUnset, evalAndClick, selectOptionInSelect2, setCheckbox } from './page-utils';
 import factories from './factories';
 
 const config = require( 'config' );
 const simpleProductName = config.get( 'products.simple.name' );
 const simpleProductPrice = config.has('products.simple.price') ? config.get('products.simple.price') : '9.99';
 
-const verifyAndPublish = async () => {
+/**
+ * Verify and publish
+ *
+ * @param noticeText The text that appears in the notice after publishing.
+ */
+const verifyAndPublish = async ( noticeText ) => {
 	// Wait for auto save
 	await page.waitFor( 2000 );
 
@@ -22,9 +27,23 @@ const verifyAndPublish = async () => {
 	await page.waitForSelector( '.updated.notice' );
 
 	// Verify
-	await expect( page ).toMatchElement( '.updated.notice', { text: 'Product published.' } );
+	await expect( page ).toMatchElement( '.updated.notice', { text: noticeText } );
 };
 
+/**
+ * Wait for primary button to be enabled and click.
+ *
+ * @param waitForNetworkIdle - Wait for network idle after click
+ * @returns {Promise<void>}
+ */
+const waitAndClickPrimary = async ( waitForNetworkIdle = true ) => {
+	// Wait for "Continue" button to become active
+	await page.waitForSelector( 'button.is-primary:not(:disabled)' );
+	await page.click( 'button.is-primary' );
+	if ( waitForNetworkIdle ) {
+		await page.waitForNavigation( { waitUntil: 'networkidle0' } );
+	}
+};
 /**
  * Complete onboarding wizard.
  */
@@ -88,15 +107,7 @@ const completeOnboardingWizard = async () => {
 	await expect( page ).toFill( '.components-text-control__input', config.get( 'onboardingwizard.industry' ) );
 
 	// Wait for "Continue" button to become active
-	await page.waitForSelector( 'button.is-primary:not(:disabled)' );
-
-	await Promise.all( [
-		// Click on "Continue" button to move to the next step
-		page.click( 'button.is-primary' ),
-
-		// Wait for "What type of products will be listed?" section to load
-		page.waitForNavigation( { waitUntil: 'networkidle0' } ),
-	] );
+	await waitAndClickPrimary();
 
 	// Product types section
 
@@ -110,15 +121,7 @@ const completeOnboardingWizard = async () => {
 	}
 
 	// Wait for "Continue" button to become active
-	await page.waitForSelector( 'button.is-primary:not(:disabled)' );
-
-	await Promise.all( [
-		// Click on "Continue" button to move to the next step
-		page.click( 'button.is-primary' ),
-
-		// Wait for "Tell us about your business" section to load
-		page.waitForNavigation( { waitUntil: 'networkidle0' } ),
-	] );
+	await waitAndClickPrimary();
 
 	// Business Details section
 
@@ -136,48 +139,15 @@ const completeOnboardingWizard = async () => {
 	await page.waitForSelector( '.woocommerce-select-control__control' );
 	await expect( page ).toClick( '.woocommerce-select-control__option', { text: config.get( 'onboardingwizard.sellingelsewhere' ) } );
 
-	// Query for the extensions toggles
-	const extensionsToggles = await page.$$( '.components-form-toggle__input' );
-	expect( extensionsToggles ).toHaveLength( 4 );
-
-	// Disable download of the onboarding suggested extensions
-	for ( let i = 0; i < extensionsToggles.length; i++ ) {
-		await extensionsToggles[i].click();
-	}
-
 	// Wait for "Continue" button to become active
-	await page.waitForSelector( 'button.is-primary:not(:disabled)' );
+	await waitAndClickPrimary( false );
 
-	await Promise.all( [
-		// Click on "Continue" button to move to the next step
-		page.click( 'button.is-primary' ),
-
-		// Wait for "Theme" section to load
-		page.waitForNavigation( { waitUntil: 'networkidle0' } ),
-	] );
+	// Skip installing extensions
+	await evalAndClick( '.components-checkbox-control__input' );
+	await waitAndClickPrimary();
 
 	// Theme section
-
-	// Wait for "Continue with my active theme" button to become active
-	await page.waitForSelector( 'button.is-primary:not(:disabled)' );
-
-	await Promise.all( [
-		// Click on "Continue with my active theme" button to move to the next step
-		page.click( 'button.is-primary' ),
-
-		// Wait for "Enhance your store with WooCommerce Services" section to load
-		page.waitForNavigation( { waitUntil: 'networkidle0' } ),
-	] );
-
-	// Benefits section
-
-	// Wait for Benefits section to appear
-	await page.waitForSelector( '.woocommerce-profile-wizard__benefits' );
-
-	// Wait for "No thanks" button to become active
-	await page.waitForSelector( 'button.is-secondary:not(:disabled)' );
-	// Click on "No thanks" button to move to the next step
-	await page.click( 'button.is-secondary' );
+	await waitAndClickPrimary();
 
 	// End of onboarding wizard
 
@@ -205,19 +175,48 @@ const completeOnboardingWizard = async () => {
 
 /**
  * Create simple product.
+ *
+ * @param productTitle - Defaults to Simple Product. Customizable title.
+ * @param productPrice - Defaults to $9.99. Customizable pricing.
  */
-const createSimpleProduct = async () => {
+const createSimpleProduct = async ( productTitle = simpleProductName, productPrice = simpleProductPrice ) => {
 	const product = await factories.products.simple.create( {
-		name: simpleProductName,
-		regularPrice: simpleProductPrice
+		name: productTitle,
+		regularPrice: productPrice
 	} );
 	return product.id;
 } ;
 
 /**
+ * Create simple product with categories
+ *
+ * @param productName Product's name which can be changed when writing a test
+ * @param productPrice Product's price which can be changed when writing a test
+ * @param categoryName Product's category which can be changed when writing a test
+ */
+const createSimpleProductWithCategory = async ( productName, productPrice, categoryName ) => {
+	const product = await factories.products.simple.create( {
+		name: productName,
+		regularPrice: productPrice,
+		categories: [
+			{
+				name: categoryName,
+			}
+		],
+		isVirtual: true,
+	} );
+
+	return product.id;
+};
+
+/**
  * Create variable product.
  */
 const createVariableProduct = async () => {
+
+	// We need to remove any listeners on the `dialog` event otherwise we can't catch the dialogs below
+	page.removeAllListeners('dialog');
+
 	// Go to "add product" page
 	await merchant.openNewProduct();
 
@@ -338,12 +337,46 @@ const createVariableProduct = async () => {
 	await page.focus( 'button.save-variation-changes' );
 	await expect( page ).toClick( 'button.save-variation-changes', { text: 'Save changes' } );
 
-	await verifyAndPublish();
+	await verifyAndPublish( 'Product published.' );
 
 	const variablePostId = await page.$( '#post_ID' );
 	let variablePostIdValue = ( await ( await variablePostId.getProperty( 'value' ) ).jsonValue() );
 	return variablePostIdValue;
 };
+
+/**
+ * Create grouped product.
+ */
+const createGroupedProduct = async () => {
+	// Create two products to be linked in a grouped product after
+	await factories.products.simple.create( {
+		name: simpleProductName + ' 1',
+		regularPrice: simpleProductPrice
+	} );
+	await factories.products.simple.create( {
+		name: simpleProductName + ' 2',
+		regularPrice: simpleProductPrice
+	} );
+
+	// Go to "add product" page
+	await merchant.openNewProduct();
+
+	// Make sure we're on the add product page
+	await expect( page.title() ).resolves.toMatch( 'Add new product' );
+
+	// Set product data and save the product
+	await expect( page ).toFill( '#title', 'Grouped Product' );
+	await expect( page ).toSelect( '#product-type', 'Grouped product' );
+	await clickTab( 'Linked Products' );
+	await selectOptionInSelect2( simpleProductName + ' 1' );
+	await selectOptionInSelect2( simpleProductName + ' 2' );
+	await verifyAndPublish();
+
+	// Get product ID
+	const groupedPostId = await page.$( '#post_ID' );
+	let groupedPostIdValue = ( await ( await groupedPostId.getProperty( 'value' ) ).jsonValue() );
+	return groupedPostIdValue;
+}
 
 /**
  * Create a basic order with the provided order status.
@@ -427,12 +460,94 @@ const createCoupon = async ( couponAmount = '5', discountType = 'Fixed cart disc
 	return couponCode;
 };
 
+/**
+ * Adds a shipping zone along with a shipping method.
+ *
+ * @param zoneName Shipping zone name.
+ * @param zoneLocation Shiping zone location. Defaults to United States (US).
+ * @param zipCode Shipping zone zip code. Defaults to empty one space.
+ * @param zoneMethod Shipping method type. Defaults to flat_rate (use also: free_shipping or local_pickup)
+ */
+const addShippingZoneAndMethod = async ( zoneName, zoneLocation = 'United States (US)', zipCode = ' ', zoneMethod = 'flat_rate' ) => {
+	await merchant.openNewShipping();
+
+	// Fill shipping zone name
+	await page.waitForSelector('input#zone_name');
+	await expect(page).toFill('input#zone_name', zoneName);
+
+	// Select shipping zone location
+	// (.toSelect is not best option here because a lot of &nbsp are present in country/state names)
+	await expect(page).toFill('#zone_locations', zoneLocation);
+	await uiUnblocked();
+	await page.keyboard.press('Tab');
+	await uiUnblocked();
+	await page.keyboard.press('Enter');
+
+	// Fill shipping zone postcode if needed otherwise just put empty space
+	await page.waitForSelector('a.wc-shipping-zone-postcodes-toggle');
+	await expect(page).toClick('a.wc-shipping-zone-postcodes-toggle');
+	await expect(page).toFill('#zone_postcodes', zipCode);
+	await expect(page).toMatchElement('#zone_postcodes', zipCode);
+	await expect(page).toClick('button#submit');
+
+	// Add shipping zone method
+	await uiUnblocked();
+	await expect(page).toClick('button.wc-shipping-zone-add-method', {text:'Add shipping method'});
+	await page.waitForSelector('.wc-shipping-zone-method-selector');
+	await expect(page).toSelect('select[name="add_method_id"]', zoneMethod);
+	await uiUnblocked();
+	await expect(page).toClick('button#btn-ok');
+	await page.waitForSelector('#zone_locations');
+	await uiUnblocked();
+};
+
+/**
+ * Click the Update button on the order details page.
+ *
+ * @param noticeText The text that appears in the notice after updating the order.
+ * @param waitForSave Optionally wait for auto save.
+ */
+const clickUpdateOrder = async ( noticeText, waitForSave = false ) => {
+	if ( waitForSave ) {
+		await page.waitFor( 2000 );
+	}
+
+	// Update order
+	await expect( page ).toClick( 'button.save_order' );
+	await page.waitForSelector( '.updated.notice' );
+
+	// Verify
+	await expect( page ).toMatchElement( '.updated.notice', { text: noticeText } );
+};
+
+/**
+ * Delete all email logs in the WP Mail Logging plugin page.
+ */
+const deleteAllEmailLogs = async () => {
+	await merchant.openEmailLog();
+
+	// Make sure we have emails to delete. If we don't, this selector will return null.
+	if ( await page.$( '#bulk-action-selector-top' ) !== null ) {
+		await setCheckbox( '#cb-select-all-1' );
+		await expect( page ).toSelect( '#bulk-action-selector-top', 'Delete' );
+		await Promise.all( [
+			page.click( '#doaction' ),
+			page.waitForNavigation( { waitUntil: 'networkidle0' } ),
+		] );
+	}
+};
+
 export {
 	completeOnboardingWizard,
 	createSimpleProduct,
 	createVariableProduct,
+	createGroupedProduct,
 	createSimpleOrder,
 	verifyAndPublish,
 	addProductToOrder,
 	createCoupon,
+	addShippingZoneAndMethod,
+	createSimpleProductWithCategory,
+	clickUpdateOrder,
+	deleteAllEmailLogs,
 };

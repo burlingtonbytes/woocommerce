@@ -4,7 +4,7 @@ const { spawnSync } = require( 'child_process' );
 const program = require( 'commander' );
 const path = require( 'path' );
 const fs = require( 'fs' );
-const { getAppBase, getAppRoot, getAppName, getTestConfig } = require( '../utils' );
+const { getAdminConfig, getAppBase, getAppRoot, getAppName, getTestConfig } = require( '../utils' );
 
 const dockerArgs = [];
 let command = '';
@@ -29,12 +29,12 @@ program
     .parse( process.argv );
 
 const appPath = getAppRoot();
-const envVars = {};
+const envVars = getAdminConfig();
 
 if ( appPath ) {
     if ( 'up' === command ) {
         // Look for an initialization script in the dependent app.
-        if ( customInitFile ) {
+        if ( customInitFile && typeof customInitFile === 'string' ) {
             const possibleInitFile = customInitFile;
             customInitFile = path.resolve( possibleInitFile );
             if ( ! fs.existsSync( customInitFile ) ) {
