@@ -1054,7 +1054,7 @@ function wc_setcookie( $name, $value, $expire = 0, $secure = false, $httponly = 
 		// Check PHP version and fall back to legacy syntax (without SameSite) if PHP is too old.
 		if ( PHP_VERSION_ID >= 70300 ) {
 			$options = array(
-				'expire'   => $expire,
+				'expires'  => $expire,
 				'path'     => COOKIEPATH ? COOKIEPATH : '/',
 				'domain'   => COOKIE_DOMAIN,
 				'secure'   => apply_filters( 'woocommerce_cookie_secure', $secure, $name, $value, $expire, $samesite ),
